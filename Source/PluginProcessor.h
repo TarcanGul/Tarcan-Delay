@@ -50,6 +50,12 @@ public:
     void setCurrentProgram (int index) override;
     const String getProgramName (int index) override;
     void changeProgramName (int index, const String& newName) override;
+	AudioProcessorValueTreeState& getState() { return processorState; };
+	/*void parameterChanged(const String& parameterID, float newValue)
+
+	{
+		MajorParamChange = true;
+	};*/
 
     //==============================================================================
     void getStateInformation (MemoryBlock& destData) override;
@@ -60,10 +66,13 @@ public:
 	float feedback;
 	double delayTime;
 	
-	AudioProcessorValueTreeState volumeState;
+	//Creating automable parameters for every single value the user can control.
+	AudioProcessorValueTreeState processorState;
+
 
 private:
 	AudioSampleBuffer delayBuffer;
+	bool MajorParamChange;
 	int delayLen;
 	int delayReadPos, delayWritePos;
 	int delayBufferLen;
