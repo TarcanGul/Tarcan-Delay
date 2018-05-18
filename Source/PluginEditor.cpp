@@ -7,9 +7,11 @@
 
   ==============================================================================
 */
-
+#include <stdio.h>
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+
+
 
 //==============================================================================
 TarcanDelayAudioProcessorEditor::TarcanDelayAudioProcessorEditor (TarcanDelayAudioProcessor& p)
@@ -24,11 +26,14 @@ TarcanDelayAudioProcessorEditor::TarcanDelayAudioProcessorEditor (TarcanDelayAud
 	volumeLabel.setText("VOLUME", juce::NotificationType::dontSendNotification);
 	volumeSlider.setSliderStyle(Slider::SliderStyle::Rotary);
 	volumeSlider.setTextBoxStyle(Slider::NoTextBox, true, 50, 50);
-	volumeSlider.setTextValueSuffix("Volume");
+	
 	volumeSlider.setRange(-48, 0);
 	volumeSlider.setValue(-10);
 	volumeSlider.setLookAndFeel(&tarcanFeel);
+	
 	volumeSlider.addListener(this);
+	addAndMakeVisible(&volumeSlider);
+	addAndMakeVisible(&volumeLabel);
 
 	
 	dryLabel.setText("Dry Level", juce::NotificationType::dontSendNotification);
@@ -37,7 +42,10 @@ TarcanDelayAudioProcessorEditor::TarcanDelayAudioProcessorEditor (TarcanDelayAud
 	drySlider.setRange(0.0, 1.0, 0.01);
 	drySlider.setValue(1.0);
 	drySlider.setLookAndFeel(&tarcanFeel);
+	
 	drySlider.addListener(this);
+	
+	
 	
 	wetLabel.setText("Wet Level", juce::NotificationType::dontSendNotification);
 	wetSlider.setSliderStyle(Slider::SliderStyle::Rotary);
@@ -45,28 +53,37 @@ TarcanDelayAudioProcessorEditor::TarcanDelayAudioProcessorEditor (TarcanDelayAud
 	wetSlider.setRange(0.0, 1.0,0.01);
 	wetSlider.setValue(0.5);
 	wetSlider.setLookAndFeel(&tarcanFeel);
+	
 	wetSlider.addListener(this);
 
+	
+	
 	feedbackLabel.setText("Feedback", juce::NotificationType::dontSendNotification);
 	feedbackSlider.setSliderStyle(Slider::SliderStyle::Rotary);
 	feedbackSlider.setTextBoxStyle(Slider::NoTextBox, true, 50, 50);
 	feedbackSlider.setRange(0.0, 0.9, 0.05);
 	feedbackSlider.setValue(0.2);
 	feedbackSlider.setLookAndFeel(&tarcanFeel);
+	
 	feedbackSlider.addListener(this);
 
+	
 	timeLabel.setText("Time", juce::NotificationType::dontSendNotification);
 	timeSlider.setSliderStyle(Slider::SliderStyle::Rotary);
 	timeSlider.setTextBoxStyle(Slider::NoTextBox, true, 50, 50);
 	timeSlider.setRange(0.1, 2.0, 0.1);
 	timeSlider.setValue(0.5);
 	timeSlider.setLookAndFeel(&tarcanFeel);
+	
 	timeSlider.addListener(this);
+
+	
+
+
 
 	addAndMakeVisible(&drySlider);
 	addAndMakeVisible(&dryLabel);
-	addAndMakeVisible(&volumeSlider);
-	addAndMakeVisible(&volumeLabel);
+	
 	addAndMakeVisible(&wetLabel);
 	addAndMakeVisible(&wetSlider);
 	addAndMakeVisible(&feedbackLabel);
@@ -74,16 +91,17 @@ TarcanDelayAudioProcessorEditor::TarcanDelayAudioProcessorEditor (TarcanDelayAud
 	addAndMakeVisible(&timeLabel);
 	addAndMakeVisible(&timeSlider);
 
-	sliderAttach = new AudioProcessorValueTreeState::SliderAttachment(processor.volumeState, "vol", volumeSlider);
+	volumeAttach = new AudioProcessorValueTreeState::SliderAttachment(processor.getState(), "vol", volumeSlider);
+	timeAttach = new AudioProcessorValueTreeState::SliderAttachment(processor.getState(), "time", timeSlider);
+	feedAttach = new AudioProcessorValueTreeState::SliderAttachment(processor.getState(), "feedback", feedbackSlider);
+	dryAttach = new AudioProcessorValueTreeState::SliderAttachment(processor.getState(), "dry", drySlider);
+	wetAttach = new AudioProcessorValueTreeState::SliderAttachment(processor.getState(), "wet", wetSlider);
+
 }
 
 TarcanDelayAudioProcessorEditor::~TarcanDelayAudioProcessorEditor()
 {
-    volumeSlider.removeListener(this);
-	drySlider.removeListener(this);
-	wetSlider.removeListener(this);
-	timeSlider.removeListener(this);
-	feedbackSlider.removeListener(this);
+   
 }
 
 //==============================================================================
@@ -94,7 +112,7 @@ void TarcanDelayAudioProcessorEditor::paint (Graphics& g)
 
     g.setColour (Colours::white);
     g.setFont (10.0f);
-    g.drawFittedText ("Developed by Tarcan Gul", getLocalBounds(), Justification::topLeft, 1);
+    //g.drawFittedText ("Developed by Tarcan Gul", getLocalBounds(), Justification::topLeft, 1);
     
 }
 
@@ -123,6 +141,7 @@ void TarcanDelayAudioProcessorEditor::sliderValueChanged(Slider *slider)
     if (slider == &volumeSlider)
 	{
 		processor.rawSound =pow(10, volumeSlider.getValue() / 20);
+
 	}
 	else if (slider == &drySlider)
 	{
@@ -142,3 +161,4 @@ void TarcanDelayAudioProcessorEditor::sliderValueChanged(Slider *slider)
 		
 	}
 }
+

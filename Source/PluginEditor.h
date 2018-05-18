@@ -46,14 +46,15 @@ public:
 	}
 };
 
-class TarcanDelayAudioProcessorEditor  : public AudioProcessorEditor, 
-                                         public Slider::Listener
+class TarcanDelayAudioProcessorEditor : public AudioProcessorEditor,
+	public Slider::Listener
 {
 public:
     TarcanDelayAudioProcessorEditor (TarcanDelayAudioProcessor&);
     ~TarcanDelayAudioProcessorEditor();
 
     //==============================================================================
+	//void timerCallback();
     void paint (Graphics&) override;
     void resized() override;
     TarcanLookAndFeel tarcanFeel;
@@ -68,7 +69,11 @@ public:
 	Slider timeSlider;
 	Label timeLabel;
 	void sliderValueChanged(Slider *slider) override;
-	ScopedPointer <AudioProcessorValueTreeState::SliderAttachment> sliderAttach;
+	ScopedPointer <AudioProcessorValueTreeState::SliderAttachment> volumeAttach;
+	ScopedPointer <AudioProcessorValueTreeState::SliderAttachment> dryAttach;
+	ScopedPointer <AudioProcessorValueTreeState::SliderAttachment> wetAttach;
+	ScopedPointer <AudioProcessorValueTreeState::SliderAttachment> feedAttach;
+	ScopedPointer <AudioProcessorValueTreeState::SliderAttachment> timeAttach;
 
 private:
     // This reference is provided as a quick way for your editor to

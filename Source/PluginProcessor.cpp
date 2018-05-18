@@ -11,6 +11,12 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+/*
+AudioProcessorValueTreeState delayTimeState;
+AudioProcessorValueTreeState dryLevelState;
+AudioProcessorValueTreeState wetLevelState;
+AudioProcessorValueTreeState feedbackState;
+*/
 //==============================================================================
 TarcanDelayAudioProcessor::TarcanDelayAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -21,22 +27,40 @@ TarcanDelayAudioProcessor::TarcanDelayAudioProcessor()
                       #endif
                        .withOutput ("Output", AudioChannelSet::stereo(), true)
                      #endif
-                       ), volumeState(*this, nullptr)
+                       ),processorState(*this, nullptr)
 #endif
 {
-    volumeState.createAndAddParameter("vol", "VolumeLevel", "VolumeLevel", NormalisableRange<float>(-64, 0), 0.5f, nullptr, nullptr);
+	
+	NormalisableRange<float> volumeRange(-48, 0);
+	NormalisableRange<float> timeRange(0.1, 2.0,0.1);
+	NormalisableRange<float> dry_wetRange(0.0, 1.0,0.01);
+	NormalisableRange<float> feedRange(0.0, 1.0,0.05);
+    processorState.createAndAddParameter("vol", "VolumeLevel", "VolumeLevel", volumeRange, -10.0f, nullptr, nullptr);
+	processorState.createAndAddParameter("time", "DelayTime", "DelayTime", timeRange, 0.5f, nullptr, nullptr);
+	processorState.createAndAddParameter("dry", "DryLevel", "DryLevel", dry_wetRange, 1.0f, nullptr, nullptr);
+	processorState.createAndAddParameter("wet", "WetLevel", "WetLevel", dry_wetRange, 0.5f, nullptr, nullptr);
+	processorState.createAndAddParameter("feedback", "Feedback", "Feedback", feedRange, 0.2f, nullptr, nullptr);
 	delayReadPos, delayWritePos = 0;
-	dryMix = 1.0;
+	/*dryMix = 1.0;
 	wetMix = 0.5;
 	feedback = 0.2;
 	delayTime = 0.5;
-
+	*/
 	delayBufferLen = 1;
 	delayLen = 0.5;
+
+	
+	processorState.state = ValueTree("Tarcan");
+	//processorState->addParameterListener("Param_List", this);
+	
+	
+
+
 }
 
 TarcanDelayAudioProcessor::~TarcanDelayAudioProcessor()
 {
+	
 }
 
 //==============================================================================
@@ -106,15 +130,15 @@ void TarcanDelayAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
-
+	
 	delayBufferLen = (int)(2*sampleRate);
-	/*if (delayBufferLen < 1) 
+	if (delayBufferLen < 1) 
 	{
 		delayBufferLen = 1;
-	}*/
+	}
 	delayBuffer.setSize(2, delayBufferLen);
 	delayBuffer.clear();
-
+	
 	
 }
 
@@ -208,6 +232,7 @@ void TarcanDelayAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBu
 
 	for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
 		buffer.clear(i, 0, buffer.getNumSamples());
+
 }
 
 //==============================================================================
@@ -227,13 +252,33 @@ void TarcanDelayAudioProcessor::getStateInformation (MemoryBlock& destData)
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
+	/*MemoryOutputStream stream(destData, false);
+	volumeState.state.writeToStream(stream);
+	delayTimeState.state.writeToStream(stream);
+	dryLevelState.state.writeToStream(stream);
+	wetLevelState.state.writeToStream(stream);
+	feedbackState.state.writeToStream(stream);*/
+	/*MemoryOutputStream(destData, true).writeFloat(*volumeState);
+	MemoryOutputStream(destData, true).writeFloat(*delayTimeState);
+	MemoryOutputStream(destData, true).writeFloat(*dryLevelState);
+	MemoryOutputStream(destData, true).writeFloat(*wetLevelState);
+	MemoryOutputStream(destData, true).writeFloat(*feedbackState);*/
+	
 }
 
 void TarcanDelayAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
+	/**volumeState = MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false).readFloat();
+	*delayTimeState = MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false).readFloat();
+	*dryLevelState = MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false).readFloat();
+	*wetLevelState = MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false).readFloat();
+	*feedbackState = MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false).readFloat();*/
+	
 }
+
+
 
 //==============================================================================
 // This creates new instances of the plugin..
