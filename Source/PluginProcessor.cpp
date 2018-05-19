@@ -50,7 +50,7 @@ TarcanDelayAudioProcessor::TarcanDelayAudioProcessor()
 	delayLen = 0.5;
 
 	
-	processorState.state = ValueTree("Tarcan");
+	processorState.state = ValueTree("liveState");
 	//processorState->addParameterListener("Param_List", this);
 	
 	
@@ -252,17 +252,14 @@ void TarcanDelayAudioProcessor::getStateInformation (MemoryBlock& destData)
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
-	/*MemoryOutputStream stream(destData, false);
-	volumeState.state.writeToStream(stream);
-	delayTimeState.state.writeToStream(stream);
-	dryLevelState.state.writeToStream(stream);
-	wetLevelState.state.writeToStream(stream);
-	feedbackState.state.writeToStream(stream);*/
-	/*MemoryOutputStream(destData, true).writeFloat(*volumeState);
-	MemoryOutputStream(destData, true).writeFloat(*delayTimeState);
-	MemoryOutputStream(destData, true).writeFloat(*dryLevelState);
-	MemoryOutputStream(destData, true).writeFloat(*wetLevelState);
-	MemoryOutputStream(destData, true).writeFloat(*feedbackState);*/
+	ScopedPointer <XmlElement> savepoint(processorState.state.createXml());
+	savepoint->setAttribute("rawSound", rawSound);
+	savepoint->setAttribute("dryMix", dryMix);
+	savepoint->setAttribute("wetMix", wetMix);
+	savepoint->setAttribute("feedback", feedback);
+	savepoint->setAttribute("delayTime", delayTime);
+
+	copyXmlToBinary(*savepoint, destData);
 	
 }
 
@@ -270,11 +267,19 @@ void TarcanDelayAudioProcessor::setStateInformation (const void* data, int sizeI
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
-	/**volumeState = MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false).readFloat();
-	*delayTimeState = MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false).readFloat();
-	*dryLevelState = MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false).readFloat();
-	*wetLevelState = MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false).readFloat();
-	*feedbackState = MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false).readFloat();*/
+	ScopedPointer<XmlElement> restore(getXmlFromBinary(data, sizeInBytes));
+	if (restore != nullptr) 
+	{
+		if (restore->hasTagName(processorState.state.getType())) 
+		{
+			processorState.state = ValueTree::fromXml(*restore);
+			rawSound = restore->getDoubleAttribute("rawSound");
+			dryMix = restore->getDoubleAttribute("dryMix");
+			wetMix = restore->getDoubleAttribute("wetMix");
+			feedback = restore->getDoubleAttribute("feedback");
+			delayTime = restore->getDoubleAttribute("delayTime");
+		}
+	}
 	
 }
 

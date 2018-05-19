@@ -28,7 +28,7 @@ TarcanDelayAudioProcessorEditor::TarcanDelayAudioProcessorEditor (TarcanDelayAud
 	volumeSlider.setTextBoxStyle(Slider::NoTextBox, true, 50, 50);
 	
 	volumeSlider.setRange(-48, 0);
-	volumeSlider.setValue(-10);
+	//volumeSlider.setValue(-10);
 	volumeSlider.setLookAndFeel(&tarcanFeel);
 	
 	volumeSlider.addListener(this);
@@ -40,7 +40,7 @@ TarcanDelayAudioProcessorEditor::TarcanDelayAudioProcessorEditor (TarcanDelayAud
 	drySlider.setSliderStyle(Slider::SliderStyle::Rotary);
 	drySlider.setTextBoxStyle(Slider::NoTextBox, true, 50, 50);
 	drySlider.setRange(0.0, 1.0, 0.01);
-	drySlider.setValue(1.0);
+	//drySlider.setValue(1.0);
 	drySlider.setLookAndFeel(&tarcanFeel);
 	
 	drySlider.addListener(this);
@@ -51,7 +51,7 @@ TarcanDelayAudioProcessorEditor::TarcanDelayAudioProcessorEditor (TarcanDelayAud
 	wetSlider.setSliderStyle(Slider::SliderStyle::Rotary);
 	wetSlider.setTextBoxStyle(Slider::NoTextBox, true, 50, 50);
 	wetSlider.setRange(0.0, 1.0,0.01);
-	wetSlider.setValue(0.5);
+	//wetSlider.setValue(0.5);
 	wetSlider.setLookAndFeel(&tarcanFeel);
 	
 	wetSlider.addListener(this);
@@ -62,7 +62,7 @@ TarcanDelayAudioProcessorEditor::TarcanDelayAudioProcessorEditor (TarcanDelayAud
 	feedbackSlider.setSliderStyle(Slider::SliderStyle::Rotary);
 	feedbackSlider.setTextBoxStyle(Slider::NoTextBox, true, 50, 50);
 	feedbackSlider.setRange(0.0, 0.9, 0.05);
-	feedbackSlider.setValue(0.2);
+	//feedbackSlider.setValue(0.2);
 	feedbackSlider.setLookAndFeel(&tarcanFeel);
 	
 	feedbackSlider.addListener(this);
@@ -72,7 +72,7 @@ TarcanDelayAudioProcessorEditor::TarcanDelayAudioProcessorEditor (TarcanDelayAud
 	timeSlider.setSliderStyle(Slider::SliderStyle::Rotary);
 	timeSlider.setTextBoxStyle(Slider::NoTextBox, true, 50, 50);
 	timeSlider.setRange(0.1, 2.0, 0.1);
-	timeSlider.setValue(0.5);
+	//timeSlider.setValue(0.5);
 	timeSlider.setLookAndFeel(&tarcanFeel);
 	
 	timeSlider.addListener(this);
